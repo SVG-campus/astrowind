@@ -7,11 +7,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--aw-color-primary)',
-        secondary: 'var(--aw-color-secondary)',
-        accent: 'var(--aw-color-accent)',
-        default: 'var(--aw-color-text-default)',
-        muted: 'var(--aw-color-text-muted)',
+        primary: '#FFB348',       // Golden Giving
+        secondary: '#48C9FF',    // Compassion Sky
+        accentMint: '#48FF8F',   // Unity Mint
+        accentGreen: '#A5FF48',  // Hope Green
       },
       fontFamily: {
         sans: ['var(--aw-font-sans, ui-sans-serif)', ...defaultTheme.fontFamily.sans],
