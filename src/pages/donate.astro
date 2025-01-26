@@ -1,0 +1,28 @@
+
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+
+const metadata = {
+  title: 'Donate',
+};
+---
+<Layout metadata={metadata}>
+  <Hero
+    tagline="Donate"
+    title="Support Our Mission"
+    subtitle="Your generosity helps expand our services and enrich our community."
+  />
+
+  <!-- Donation instructions or form would go here -->
+
+  <CallToAction
+    title="Your Gift Matters"
+    subtitle="Join us in making a lasting impact."
+    actions={[
+      { text: 'Events', href: '/events' },
+      { text: 'Success Stories', href: '/success-stories' },
+    ]}
+  />
+</Layout>

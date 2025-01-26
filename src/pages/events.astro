@@ -1,0 +1,25 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+
+const metadata = {
+  title: 'Events',
+};
+---
+<Layout metadata={metadata}>
+  <Hero
+    tagline="Events"
+    title="Community Gatherings"
+    subtitle="Stay updated on upcoming volunteer opportunities, workshops, and local meetups."
+  />
+
+  <CallToAction
+    title="Join an Event"
+    subtitle="Contribute to building a stronger community."
+    actions={[
+      { text: 'Volunteer', href: '/donate' },
+      { text: 'Share Your Story', href: '/success-stories' },
+    ]}
+  />
+</Layout>

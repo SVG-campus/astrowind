@@ -1,0 +1,28 @@
+
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+
+const metadata = {
+  title: 'Success Stories',
+};
+---
+<Layout metadata={metadata}>
+  <Hero
+    tagline="Success Stories"
+    title="Fort in Action"
+    subtitle="Real experiences of how our initiatives have made a difference in people's lives."
+  />
+
+  <!-- Sample stories can go here -->
+
+  <CallToAction
+    title="Create Your Own Success Story"
+    subtitle="Join Fort's projects and transform your future."
+    actions={[
+      { text: 'Events', href: '/events' },
+      { text: 'Donate', href: '/donate' },
+    ]}
+  />
+</Layout>
