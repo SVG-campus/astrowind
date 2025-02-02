@@ -12,7 +12,6 @@ export const headerData = {
     { text: 'About', href: getPermalink('/about') },
     { text: 'Contact', href: getPermalink('/contact') },
     { text: 'Donate', href: getPermalink('/donate') },
-    { text: 'Pricing', href: getPermalink('/pricing') },
   ],
   // Optional call-to-action button(s) can be added here if needed
   actions: [
