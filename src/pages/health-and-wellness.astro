@@ -1,0 +1,60 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Content from '~/components/widgets/Content.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+
+const metadata = {
+  title: 'Health & Wellness',
+};
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    tagline="Health & Wellness"
+    title="Wellbeing at the Core"
+    subtitle="Discover resources, tips, and inspiration for a healthier, happier life."
+    actions={[
+      { text: 'Explore Resources', href: '/health-and-wellness/resources', variant: 'primary' },
+      { text: 'Join the Community', href: '/health-and-wellness/community' }
+    ]}
+    image={{ src: '~/assets/images/health-hero.jpg', alt: 'Health & Wellness Hero Image' }}
+  />
+
+  <Content
+    tagline="Our Approach"
+    title="A Holistic Path to Wellness"
+    items={[
+      { title: 'Mindfulness', description: 'Techniques for a calmer, centered mind.' },
+      { title: 'Nutrition', description: 'Guidance on healthy eating and balance.' },
+      { title: 'Fitness', description: 'Workout tips to keep you active and strong.' },
+    ]}
+    image={{ src: 'https://images.unsplash.com/photo-1526401485004-5b1a5f12b0c4?auto=format&fit=crop&w=2070&q=80', alt: 'Holistic Wellness' }}
+  >
+    <Fragment slot="content">
+      Explore our comprehensive resources combining expert advice and community support to foster your wellbeing.
+    </Fragment>
+  </Content>
+
+  <CallToAction
+    title="Take the First Step"
+    subtitle="Join our community and start your journey to better health today."
+    actions={[{ text: 'Sign Up', href: '/contact' }]}
+  />
+
+  <FAQs
+    title="Health & Wellness FAQs"
+    subtitle="Find answers to common questions about our wellness resources."
+    items={[
+      {
+        title: 'What resources are available?',
+        description: 'We offer articles, tips, and expert advice on mindfulness, nutrition, and fitness.'
+      },
+      {
+        title: 'How do I join the community?',
+        description: 'Simply sign up via our contact page to receive our wellness newsletter. (Placeholder)'
+      }
+    ]}
+  />
+</Layout>

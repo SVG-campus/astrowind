@@ -23,3 +23,92 @@ const metadata = {
     ]}
   />
 </Layout>
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import Stats from '~/components/widgets/Stats.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { getCollection } from 'astro:content';
+
+const metadata = {
+  title: 'Events',
+};
+
+// Retrieve posts from your "posts" collection that have an "events" tag
+const eventsPosts = await getCollection('posts', (post) =>
+  post.data.tags && post.data.tags.includes('events')
+);
+---
+<Layout metadata={metadata}>
+  <!-- Hero Section -->
+  <Hero
+    tagline="Events"
+    title="Community Gatherings"
+    subtitle="Stay updated on our latest events, meetups, and community-driven initiatives."
+    image={{ src: '~/assets/images/events-hero.jpg', alt: 'Events Hero Image' }}
+  />
+
+  <!-- Latest Events Section -->
+  <BlogLatestPosts
+    title="Latest Events"
+    information="Discover upcoming events and opportunities to engage with our community."
+    posts={eventsPosts}  <!-- Assuming your BlogLatestPosts component can accept a 'posts' prop -->
+  />
+
+  <!-- FAQs Section -->
+  <FAQs
+    title="Event FAQs"
+    subtitle="Get answers to common questions about our events."
+    tagline="FAQs"
+    classes={{ container: 'max-w-6xl' }}
+    items={[
+      {
+        title: 'Who can attend our events?',
+        description: 'Events are open to all community members. (Placeholder)',
+      },
+      {
+        title: 'How do I register?',
+        description: 'Registration details are provided on each event page. (Placeholder)',
+      },
+      {
+        title: 'Are events free?',
+        description: 'Most events are free, though some premium workshops may have a fee. (Placeholder)',
+      },
+      {
+        title: 'How can I get event updates?',
+        description: 'Subscribe to our newsletter for the latest event news. (Placeholder)',
+      },
+    ]}
+  />
+
+  <!-- Statistics Section -->
+  <Stats
+    stats={[
+      { title: 'Upcoming Events', amount: '12' },
+      { title: 'Past Events', amount: '50+' },
+      { title: 'Attendees', amount: '5K+' },
+    ]}
+  />
+
+  <!-- Final Call-to-Action Section with additional spacing -->
+  <section class="py-12">
+    <CallToAction
+      title="Get Involved Today"
+      subtitle="Discover our Events, Success Stories, or consider making a Donation."
+      actions={[
+        { text: 'Events', href: '/events' },
+        { text: 'Success Stories', href: '/success-stories' },
+        { text: 'Donate', href: '/donate' },
+      ]}
+    >
+      <Fragment slot="title">
+        Astro&nbsp;+&nbsp;<br class="block sm:hidden" /><span class="sm:whitespace-nowrap">Tailwind CSS</span>
+      </Fragment>
+      <Fragment slot="subtitle">
+        Be amazed by the incredible features and results. Don’t waste another moment!
+      </Fragment>
+    </CallToAction>
+  </section>
+</Layout>

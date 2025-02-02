@@ -1,0 +1,60 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Content from '~/components/widgets/Content.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+
+const metadata = {
+  title: 'Education',
+};
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    tagline="Education"
+    title="Learn and Grow with Fort"
+    subtitle="Access comprehensive educational resources, tutorials, and workshops designed to empower your journey."
+    actions={[
+      { text: 'View Courses', href: '/courses', variant: 'primary' },
+      { text: 'Read Articles', href: '/blog' }
+    ]}
+    image={{ src: '~/assets/images/education-hero.jpg', alt: 'Education Hero Image' }}
+  />
+
+  <Content
+    tagline="Our Resources"
+    title="Unlock Knowledge and Skills"
+    items={[
+      { title: 'Tutorials', description: 'Step-by-step guides to master new skills.' },
+      { title: 'Workshops', description: 'Interactive sessions for practical learning.' },
+      { title: 'Webinars', description: 'Live and recorded sessions covering a range of topics.' },
+    ]}
+    image={{ src: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=2070&q=80', alt: 'Education Resources' }}
+  >
+    <Fragment slot="content">
+      Explore our curated content designed to boost your knowledge and drive personal growth.
+    </Fragment>
+  </Content>
+
+  <CallToAction
+    title="Join Our Learning Community"
+    subtitle="Sign up for exclusive access to courses and resources."
+    actions={[{ text: 'Sign Up', href: '/contact' }]}
+  />
+
+  <FAQs
+    title="Education FAQs"
+    subtitle="Find answers to common questions about our educational offerings."
+    items={[
+      {
+        title: 'What resources are available?',
+        description: 'We offer tutorials, workshops, webinars, and articles to empower your learning.'
+      },
+      {
+        title: 'How do I access courses?',
+        description: 'Courses are accessible once you register or sign up for our newsletter. (Placeholder)'
+      }
+    ]}
+  />
+</Layout>

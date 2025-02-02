@@ -1,0 +1,64 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Content from '~/components/widgets/Content.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+
+const metadata = {
+  title: 'Forum',
+};
+---
+
+<Layout metadata={metadata}>
+  <Hero
+    tagline="Community Forum"
+    title="Join the Conversation"
+    subtitle="Connect with fellow users, share ideas, and get help from our vibrant community."
+    actions={[
+      { text: 'Start a Topic', href: '/forum/new', variant: 'primary' },
+      { text: 'View Discussions', href: '/forum/discussions' }
+    ]}
+    image={{ src: '~/assets/images/forum-hero.jpg', alt: 'Forum Hero Image' }}
+  >
+    <Fragment slot="subtitle">
+      (Coming soon: A fully interactive forum powered by Flask and Firebase Auth. Placeholder)
+    </Fragment>
+  </Hero>
+
+  <Content
+    tagline="Community Discussions"
+    title="Engage with Experts and Peers"
+    items={[
+      { title: 'Latest Topics', description: 'Explore recent conversations and join the discussion. (Placeholder)' },
+      { title: 'Popular Threads', description: 'Check out trending topics and insightful discussions. (Placeholder)' },
+      { title: 'Ask a Question', description: 'Start a new thread to get answers. (Placeholder)' },
+    ]}
+    image={{ src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2070&q=80', alt: 'Forum Discussions' }}
+  >
+    <Fragment slot="content">
+      Our forum is designed to be a space where ideas are exchanged and community support thrives.
+    </Fragment>
+  </Content>
+
+  <CallToAction
+    title="Ready to join the discussion?"
+    subtitle="Register now to participate and share your insights."
+    actions={[{ text: 'Register Now', href: '/contact' }]}
+  />
+
+  <FAQs
+    title="Forum FAQs"
+    subtitle="Answers to common questions about our forum."
+    items={[
+      {
+        title: 'How do I participate?',
+        description: 'Register using our secure Firebase Auth system and start posting. (Placeholder)'
+      },
+      {
+        title: 'Is there moderation?',
+        description: 'Yes, our team ensures a respectful and helpful community environment. (Placeholder)'
+      }
+    ]}
+  />
+</Layout>
