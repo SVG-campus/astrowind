@@ -143,7 +143,8 @@ const metadata = {
       chatInput.value = '';
 
       try {
-        const res = await fetch('http://localhost:5000/chat', {
+        // Use relative URL so that in production it goes to your deployed /api/chat endpoint.
+        const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message })
