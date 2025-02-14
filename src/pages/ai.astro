@@ -1,45 +1,172 @@
-from flask import Flask, request, jsonify
-import os
-import openai
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Features from '~/components/widgets/Features.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
 
-app = Flask(__name__)
+const metadata = {
+  title: 'Fort AI',
+};
+---
 
-# Retrieve the API key from environment variables.
-openai.api_key = os.getenv("OPENAI_API_KEY")
-if not openai.api_key:
-    raise ValueError("OPENAI_API_KEY environment variable not set")
+<Layout metadata={metadata}>
+  <!-- Hero Section for Fort AI -->
+  <Hero
+    tagline="Fort AI"
+    title="Unleash Unlimited GPT‑4"
+    subtitle="Experience limitless access to GPT‑4 for all your creative, professional, and developmental needs. Sign up now to unlock Fort AI."
+    actions={[
+      {
+        variant: 'primary',
+        text: 'Use Fort AI',
+        href: '/ai/signup',
+        icon: 'tabler:rocket'
+      }
+    ]}
+    image={{ src: '~/assets/images/fort-ai-hero.jpg', alt: 'Fort AI Hero Image' }}
+  >
+    <Fragment slot="title">
+      Unleash <span class="text-accent dark:text-white highlight">Unlimited GPT‑4</span>
+    </Fragment>
+    <Fragment slot="subtitle">
+      Fort AI offers unrestricted access to cutting‑edge AI technology—empowering every registered user.
+    </Fragment>
+  </Hero>
 
-# Set your Dialogflow or OpenAI details:
-PROJECT_ID = "fort-450921"
-# For testing, using a constant session ID; in production, generate a unique session ID per conversation.
-SESSION_ID = "test-session"
-LANGUAGE_CODE = "en-US"
+  <!-- Features Section Customized for Fort AI -->
+  <Features
+    id="features"
+    tagline="Fort AI Features"
+    title="What You Get with Fort AI"
+    subtitle="Access the power of GPT‑4 with our comprehensive suite of AI tools and integrations."
+    items={[
+      {
+        title: 'Unlimited GPT‑4 Access',
+        description: 'Enjoy unrestricted GPT‑4 usage for every task, from brainstorming to complex problem solving.',
+        icon: 'tabler:brand-openai'
+      },
+      {
+        title: 'Real-time Assistance',
+        description: 'Receive immediate, context-aware responses to all your queries.',
+        icon: 'tabler:message-dots'
+      },
+      {
+        title: 'Customizable AI Solutions',
+        description: 'Tailor AI interactions to your unique needs with flexible settings.',
+        icon: 'tabler:settings'
+      },
+      {
+        title: 'Secure & Scalable',
+        description: 'Benefit from robust security and seamless scalability for all users.',
+        icon: 'tabler:shield-lock'
+      },
+      {
+        title: 'Developer Friendly',
+        description: 'Integrate advanced AI APIs into your projects effortlessly.',
+        icon: 'tabler:code'
+      },
+      {
+        title: 'Community Driven',
+        description: 'Collaborate with a thriving community of innovators and AI enthusiasts.',
+        icon: 'tabler:users'
+      }
+    ]}
+  />
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    data = request.get_json()
-    user_message = data.get("message", "")
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
+  <!-- FAQs Section for Fort AI -->
+  <FAQs
+    title="Fort AI FAQs"
+    subtitle="Answers to common questions about Fort AI."
+    tagline="FAQs"
+    classes={{ container: 'max-w-6xl' }}
+    items={[
+      {
+        title: 'What is Fort AI?',
+        description: 'Fort AI provides unlimited access to GPT‑4, empowering every registered user with state‑of‑the‑art AI capabilities.'
+      },
+      {
+        title: 'Who can access Fort AI?',
+        description: 'Every user who signs up for Fort gains instant, unlimited GPT‑4 access.'
+      },
+      {
+        title: 'How do I sign up?',
+        description: 'Simply create an account and unlock Fort AI’s features. (Placeholder for future integration with Firebase Auth.)'
+      },
+      {
+        title: 'Is there a usage limit?',
+        description: 'No—Fort AI offers truly unlimited GPT‑4 access for all registered users.'
+      }
+    ]}
+  />
 
-    try:
-        # Use OpenAI ChatCompletion API with a system prompt to enforce Fort Bot's personality.
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {
-                  "role": "system", 
-                  "content": "You are Fort Bot, a friendly, helpful chatbot for a free non-profit. You assist users with educational and support-related inquiries and always refer to yourself as Fort Bot. If you detect illegal activity, inform the appropriate authorities."
-                },
-                {"role": "user", "content": user_message}
-            ],
-            temperature=0.7,
-            max_tokens=150,
-        )
-        reply = response.choices[0].message['content']
-        return jsonify({"reply": reply})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+  <!-- Prominent Call-to-Action Section -->
+  <CallToAction
+    title="Ready to Use Fort AI?"
+    subtitle="Join now and start leveraging unlimited GPT‑4 for your projects."
+    actions={[{ variant: 'primary', text: 'Use Fort AI', href: '/ai/signup' }]}
+  >
+    <Fragment slot="title">
+      Use <span class="text-accent dark:text-white highlight">Fort AI</span>
+    </Fragment>
+    <Fragment slot="subtitle">
+      Sign up today and transform your ideas with unlimited access to GPT‑4.
+    </Fragment>
+  </CallToAction>
 
-if __name__ == '__main__':
-    app.run(debug=True)
+  <!-- Chatbox Section -->
+  <section id="chatbox" class="py-12 bg-gray-100 dark:bg-gray-800">
+    <div class="max-w-3xl mx-auto px-4">
+      <h2 class="text-2xl font-bold mb-4 text-center">Fort AI Chat</h2>
+      <div id="chat-log" class="border p-4 mb-4 h-64 overflow-y-auto bg-white dark:bg-gray-900"></div>
+      <form id="chat-form" class="flex">
+        <input type="text" id="chat-input" class="flex-grow border p-2 mr-2 rounded" placeholder="Type your message..." />
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatLog = document.getElementById('chat-log');
+
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = chatInput.value;
+      if (!message.trim()) return;
+      // Append user's message to chat log
+      const userMsgElem = document.createElement('div');
+      userMsgElem.className = 'text-right mb-2';
+      userMsgElem.textContent = "You: " + message;
+      chatLog.appendChild(userMsgElem);
+      chatInput.value = '';
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        const data = await res.json();
+        if (data.reply) {
+          const botMsgElem = document.createElement('div');
+          botMsgElem.className = 'text-left mb-2';
+          botMsgElem.textContent = "Fort AI: " + data.reply;
+          chatLog.appendChild(botMsgElem);
+        } else {
+          const errorElem = document.createElement('div');
+          errorElem.className = 'text-left mb-2 text-red-500';
+          errorElem.textContent = "Error: " + (data.error || 'Unknown error');
+          chatLog.appendChild(errorElem);
+        }
+      } catch (err) {
+        const errorElem = document.createElement('div');
+        errorElem.className = 'text-left mb-2 text-red-500';
+        errorElem.textContent = "Error: " + err.message;
+        chatLog.appendChild(errorElem);
+      }
+      chatLog.scrollTop = chatLog.scrollHeight;
+    });
+  </script>
+</Layout>
