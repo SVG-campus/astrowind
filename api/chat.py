@@ -1,26 +1,19 @@
 from flask import Flask, request, jsonify
 import os
-import requests
+import openai
 
 app = Flask(__name__)
 
 # Retrieve the API key from environment variables.
-# Ensure that in your Vercel project settings (or local .env file) you define:
-#   GOOGLE_CLOUD_CHATBOT_API_KEY = your_api_key_here
-API_KEY = os.getenv("GOOGLE_CLOUD_CHATBOT_API_KEY")
-if not API_KEY:
-    raise ValueError("GOOGLE_CLOUD_CHATBOT_API_KEY environment variable not set")
+openai.api_key = os.getenv("OPENAI_API_KEY")
+if not openai.api_key:
+    raise ValueError("OPENAI_API_KEY environment variable not set")
 
-# Your Dialogflow project details:
+# Set your Dialogflow or OpenAI details:
 PROJECT_ID = "fort-450921"
-# For testing, you can use a constant session ID.
-# In production, generate a unique session ID per conversation.
+# For testing, using a constant session ID; in production, generate a unique session ID per conversation.
 SESSION_ID = "test-session"
 LANGUAGE_CODE = "en-US"
-
-DIALOGFLOW_ENDPOINT = (
-    f"https://dialogflow.googleapis.com/v2/projects/{PROJECT_ID}/agent/sessions/{SESSION_ID}:detectIntent"
-)
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -29,25 +22,21 @@ def chat():
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
 
-    payload = {
-        "queryInput": {
-            "text": {
-                "text": user_message,
-                "languageCode": LANGUAGE_CODE
-            }
-        }
-    }
-
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
-
     try:
-        response = requests.post(DIALOGFLOW_ENDPOINT, json=payload, headers=headers)
-        response.raise_for_status()
-        result = response.json()
-        reply = result.get("queryResult", {}).get("fulfillmentText", "")
+        # Use OpenAI ChatCompletion API with a system prompt to enforce Fort Bot's personality.
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {
+                  "role": "system", 
+                  "content": "You are Fort Bot, a friendly, helpful chatbot for a free non-profit. You assist users with educational and support-related inquiries and always refer to yourself as Fort Bot. If you detect illegal activity, inform the appropriate authorities."
+                },
+                {"role": "user", "content": user_message}
+            ],
+            temperature=0.7,
+            max_tokens=150,
+        )
+        reply = response.choices[0].message['content']
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
