@@ -135,7 +135,7 @@ const metadata = {
       e.preventDefault();
       const message = chatInput.value;
       if (!message.trim()) return;
-      // Append user's message to chat log.
+      // Append user's message to chat log
       const userMsgElem = document.createElement('div');
       userMsgElem.className = 'text-right mb-2';
       userMsgElem.textContent = "You: " + message;
@@ -148,19 +148,24 @@ const metadata = {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message })
         });
-        const data = await res.json();
-        if (data.reply) {
-          const botMsgElem = document.createElement('div');
-          botMsgElem.className = 'text-left mb-2';
-          botMsgElem.textContent = "Fort AI: " + data.reply;
-          chatLog.appendChild(botMsgElem);
-        } else {
-          const errorElem = document.createElement('div');
-          errorElem.className = 'text-left mb-2 text-red-500';
-          errorElem.textContent = "Error: " + (data.error || 'Unknown error');
-          chatLog.appendChild(errorElem);
+        let data;
+        try {
+          data = await res.json();
+        } catch (jsonErr) {
+          // If JSON parsing fails, log and display the raw response text.
+          const rawText = await res.text();
+          console.error("Failed to parse JSON:", rawText);
+          data = { error: "Failed to parse JSON: " + rawText };
         }
-      } catch (err) {
+        const botMsgElem = document.createElement('div');
+        botMsgElem.className = 'text-left mb-2';
+        if (data.reply) {
+          botMsgElem.textContent = "Fort AI: " + data.reply;
+        } else {
+          botMsgElem.textContent = "Error: " + (data.error || 'Unknown error');
+        }
+        chatLog.appendChild(botMsgElem);
+      } catch(err) {
         const errorElem = document.createElement('div');
         errorElem.className = 'text-left mb-2 text-red-500';
         errorElem.textContent = "Error: " + err.message;
