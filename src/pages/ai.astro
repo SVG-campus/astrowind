@@ -135,7 +135,7 @@ const metadata = {
       e.preventDefault();
       const message = chatInput.value;
       if (!message.trim()) return;
-      // Append user's message to chat log
+      // Append user's message to chat log.
       const userMsgElem = document.createElement('div');
       userMsgElem.className = 'text-right mb-2';
       userMsgElem.textContent = "You: " + message;
