@@ -2,8 +2,6 @@ import logging
 import os
 from flask import Flask, request, jsonify, render_template_string
 from openai import OpenAI
-
-
 from dotenv import load_dotenv
 
 # Load environment variables from .env file if present.
@@ -24,6 +22,7 @@ else:
 
 # Configure OpenAI with your API key.
 client = OpenAI(api_key=OPENAI_API_KEY)
+
 # Browser-friendly GET route that serves a simple HTML page with a chatbox.
 @app.route('/', methods=['GET'])
 def index():
@@ -59,32 +58,34 @@ def index():
             const message = chatInput.value;
             if (!message.trim()) return;
             // Append user's message to chat log.
-            const userMsg = document.createElement('div');
-            userMsg.style.textAlign = 'right';
-            userMsg.textContent = 'You: ' + message;
-            chatLog.appendChild(userMsg);
+            const userMsgElem = document.createElement('div');
+            userMsgElem.className = 'text-right mb-2';
+            userMsgElem.textContent = "You: " + message;
+            chatLog.appendChild(userMsgElem);
             chatInput.value = '';
 
             try {
               const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify({ message })
               });
               const data = await res.json();
-              const botMsg = document.createElement('div');
-              botMsg.style.textAlign = 'left';
               if (data.reply) {
-                botMsg.textContent = 'Fort Bot: ' + data.reply;
+                const botMsgElem = document.createElement('div');
+                botMsgElem.className = 'text-left mb-2';
+                botMsgElem.textContent = "Fort Bot: " + data.reply;
+                chatLog.appendChild(botMsgElem);
               } else {
-                botMsg.textContent = 'Error: ' + (data.error || 'Unknown error');
+                const errorElem = document.createElement('div');
+                errorElem.className = 'text-left mb-2 text-red-500';
+                errorElem.textContent = "Error: " + (data.error || 'Unknown error');
+                chatLog.appendChild(errorElem);
               }
-              chatLog.appendChild(botMsg);
-            } catch(err) {
+            } catch (err) {
               const errorElem = document.createElement('div');
-              errorElem.style.textAlign = 'left';
-              errorElem.style.color = 'red';
-              errorElem.textContent = 'Error: ' + err.message;
+              errorElem.className = 'text-left mb-2 text-red-500';
+              errorElem.textContent = "Error: " + err.message;
               chatLog.appendChild(errorElem);
             }
             chatLog.scrollTop = chatLog.scrollHeight;
@@ -108,20 +109,22 @@ def chat():
 
     try:
         # Call OpenAI's ChatCompletion API with a system prompt to define Fort Bot's personality.
-        response = client.chat.completions.create(model="gpt-4",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are Fort Bot, a friendly chatbot for a free non-profit organization called Fort. "
-                    "Your goal is to help educate and support users. If you detect any illegal activity, inform the appropriate authorities. "
-                    "Always refer to yourself as Fort Bot."
-                )
-            },
-            {"role": "user", "content": user_message}
-        ],
-        temperature=0.7,
-        max_tokens=150)
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are Fort Bot, a friendly chatbot for a free non-profit organization called Fort. "
+                        "Your goal is to help educate and support users. If you detect any illegal activity, inform the appropriate authorities. "
+                        "Always refer to yourself as Fort Bot."
+                    )
+                },
+                {"role": "user", "content": user_message}
+            ],
+            temperature=0.9,
+            max_tokens=1500
+        )
         reply = response.choices[0].message.content
         logging.debug("Reply extracted: %s", reply)
         return jsonify({"reply": reply})
