@@ -149,14 +149,16 @@ const metadata = {
           body: JSON.stringify({ message })
         });
         let data;
-        try {
-          // Clone the response so we can read the raw text if JSON parsing fails.
+        const contentType = res.headers.get('content-type') || "";
+        if (contentType.includes('application/json')) {
           data = await res.json();
-        } catch (jsonErr) {
-          const rawText = await res.clone().text();
-          console.error("Failed to parse JSON:", rawText);
-          data = { error: "Failed to parse JSON: " + rawText };
+        } else {
+          // If not JSON, read as text and treat it as an error.
+          const rawText = await res.text();
+          console.error("Non-JSON response:", rawText);
+          data = { error: "Non-JSON response: " + rawText };
         }
+        
         const botMsgElem = document.createElement('div');
         botMsgElem.className = 'text-left mb-2';
         if (data.reply) {
