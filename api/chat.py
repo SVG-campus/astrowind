@@ -1,57 +1,134 @@
-from flask import Flask, request, jsonify
+import logging
 import os
-import requests
+from flask import Flask, request, jsonify, render_template_string
+from openai import OpenAI
+
+
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if present.
+load_dotenv()
+
+# Set up verbose logging with timestamps.
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
 app = Flask(__name__)
 
-# Retrieve the API key from environment variables.
-GOOGLE_API_KEY = os.getenv("GOOGLE_CLOUD_CHATBOT_API_KEY")
-if not GOOGLE_API_KEY:
-    raise ValueError("GOOGLE_CLOUD_CHATBOT_API_KEY environment variable not set")
+# Retrieve the OpenAI API key from environment variables.
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    logging.error("OPENAI_API_KEY environment variable not set")
+    raise ValueError("OPENAI_API_KEY environment variable not set")
+else:
+    logging.debug("OPENAI_API_KEY is set.")
 
-# Set your Dialogflow project details.
-PROJECT_ID = "fort-450921"
-# For testing, we use a constant session ID; in production, generate a unique one per conversation.
-SESSION_ID = "test-session"
-LANGUAGE_CODE = "en-US"
+# Configure OpenAI with your API key.
+client = OpenAI(api_key=OPENAI_API_KEY)
+# Browser-friendly GET route that serves a simple HTML page with a chatbox.
+@app.route('/', methods=['GET'])
+def index():
+    html = """
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Fort Chatbot</title>
+        <style>
+          body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 40px; }
+          .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
+          #chat-log { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; margin-bottom: 10px; background-color: #fafafa; }
+          input[type="text"] { width: 80%; padding: 10px; }
+          button { padding: 10px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Fort Chatbot</h1>
+          <div id="chat-log"></div>
+          <form id="chat-form">
+            <input type="text" id="chat-input" placeholder="Type your message..." autocomplete="off"/>
+            <button type="submit">Send</button>
+          </form>
+        </div>
+        <script>
+          const chatForm = document.getElementById('chat-form');
+          const chatInput = document.getElementById('chat-input');
+          const chatLog = document.getElementById('chat-log');
 
-# Construct the Dialogflow Detect Intent endpoint URL with your API key as a query parameter.
-DIALOGFLOW_ENDPOINT = (
-    f"https://dialogflow.googleapis.com/v2/projects/{PROJECT_ID}/agent/sessions/{SESSION_ID}:detectIntent?key={GOOGLE_API_KEY}"
-)
+          chatForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const message = chatInput.value;
+            if (!message.trim()) return;
+            // Append user's message to chat log.
+            const userMsg = document.createElement('div');
+            userMsg.style.textAlign = 'right';
+            userMsg.textContent = 'You: ' + message;
+            chatLog.appendChild(userMsg);
+            chatInput.value = '';
 
+            try {
+              const res = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+              });
+              const data = await res.json();
+              const botMsg = document.createElement('div');
+              botMsg.style.textAlign = 'left';
+              if (data.reply) {
+                botMsg.textContent = 'Fort Bot: ' + data.reply;
+              } else {
+                botMsg.textContent = 'Error: ' + (data.error || 'Unknown error');
+              }
+              chatLog.appendChild(botMsg);
+            } catch(err) {
+              const errorElem = document.createElement('div');
+              errorElem.style.textAlign = 'left';
+              errorElem.style.color = 'red';
+              errorElem.textContent = 'Error: ' + err.message;
+              chatLog.appendChild(errorElem);
+            }
+            chatLog.scrollTop = chatLog.scrollHeight;
+          });
+        </script>
+      </body>
+    </html>
+    """
+    return render_template_string(html)
+
+# POST route to handle chat requests.
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
     user_message = data.get("message", "")
+    logging.debug("Received message: %s", user_message)
+
     if not user_message:
+        logging.error("No message provided")
         return jsonify({"error": "No message provided"}), 400
 
-    # Prepare the payload for Dialogflow.
-    payload = {
-        "queryInput": {
-            "text": {
-                "text": user_message,
-                "languageCode": LANGUAGE_CODE
-            }
-        }
-    }
-
-    headers = {
-        "Content-Type": "application/json"
-    }
-
     try:
-        # Send the request to Dialogflow's Detect Intent API.
-        response = requests.post(DIALOGFLOW_ENDPOINT, json=payload, headers=headers)
-        response.raise_for_status()
-        result = response.json()
-
-        # Extract the fulfillment text from the response.
-        reply = result.get("queryResult", {}).get("fulfillmentText", "")
+        # Call OpenAI's ChatCompletion API with a system prompt to define Fort Bot's personality.
+        response = client.chat.completions.create(model="gpt-4",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are Fort Bot, a friendly chatbot for a free non-profit organization called Fort. "
+                    "Your goal is to help educate and support users. If you detect any illegal activity, inform the appropriate authorities. "
+                    "Always refer to yourself as Fort Bot."
+                )
+            },
+            {"role": "user", "content": user_message}
+        ],
+        temperature=0.7,
+        max_tokens=150)
+        reply = response.choices[0].message.content
+        logging.debug("Reply extracted: %s", reply)
         return jsonify({"reply": reply})
     except Exception as e:
+        logging.exception("Error during API call")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
+    logging.info("Starting Fort Chatbot Flask server...")
     app.run(debug=True)
