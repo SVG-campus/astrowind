@@ -150,10 +150,10 @@ const metadata = {
         });
         let data;
         try {
+          // Clone the response so we can read the raw text if JSON parsing fails.
           data = await res.json();
         } catch (jsonErr) {
-          // If JSON parsing fails, log and display the raw response text.
-          const rawText = await res.text();
+          const rawText = await res.clone().text();
           console.error("Failed to parse JSON:", rawText);
           data = { error: "Failed to parse JSON: " + rawText };
         }
